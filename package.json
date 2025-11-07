@@ -1,6 +1,6 @@
 {
 	"name": "n8n-nodes-superiorapis",
-	"version": "0.1.2",
+	"version": "0.1.3",
 	"description": "n8n node for SuperiorAPIs - API Store with MCP support",
 	"keywords": [
 		"n8n-community-node-package"
