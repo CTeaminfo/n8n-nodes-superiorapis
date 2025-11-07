@@ -54,8 +54,5 @@
 	},
 	"peerDependencies": {
 		"n8n-workflow": "*"
-	},
-	"dependencies": {
-		"sqlite3": "^5.1.7"
 	}
 }

@@ -9,10 +9,6 @@ import {
 	JsonObject,
 } from 'n8n-workflow';
 
-const https = require('https');
-const http = require('http');
-const { URL } = require('url');
-
 /**
  * SuperiorAPIMcp Node - MCP Protocol Dedicated Node
  *
@@ -303,8 +299,17 @@ export class SuperiorApisMcp implements INodeType {
 					mcpHeaders['Connection'] = 'keep-alive';
 					mcpHeaders['Content-Type'] = 'application/json';
 
-					// Use native HTTP(S) module to handle SSE stream
-					const sseData = await handleSSERequest(mcpUrl, mcpRequest, mcpHeaders, timeout);
+					// Use n8n helpers to handle SSE stream
+					const sseData = await this.helpers.httpRequest({
+						method: 'GET',
+						url: mcpUrl,
+						headers: mcpHeaders,
+						timeout,
+						returnFullResponse: false,
+					}).then((response: any) => {
+						// Parse SSE format response
+						return parseSSEResponse(response);
+					});
 
 					returnData.push({
 						json: sseData.length === 1
@@ -383,141 +388,51 @@ export class SuperiorApisMcp implements INodeType {
 }
 
 /**
- * ==================== SSE Request Handler Function ====================
+ * ==================== SSE Response Parser Function ====================
  *
- * Uses native HTTP(S) module to handle SSE long-connection requests
+ * Parses Server-Sent Events (SSE) format text response
  *
- * @param url - SSE endpoint URL
- * @param jsonRpcRequest - MCP JSON-RPC request object
- * @param headers - Request Headers
- * @param timeout - Timeout duration (milliseconds)
+ * @param responseText - SSE format response text
  * @returns Parsed SSE data array
  */
-function handleSSERequest(
-	url: string,
-	jsonRpcRequest: IDataObject,
-	headers: IDataObject,
-	timeout: number,
-): Promise<any[]> {
-	return new Promise((resolve, reject) => {
-		const urlObj = new URL(url);
-		const isHttps = urlObj.protocol === 'https:';
-		const httpModule = isHttps ? https : http;
+function parseSSEResponse(responseText: string | any): any[] {
+	const sseData: any[] = [];
 
-		const requestOptions = {
-			hostname: urlObj.hostname,
-			port: urlObj.port || (isHttps ? 443 : 80),
-			path: urlObj.pathname + urlObj.search,
-			method: 'GET',
-			headers: headers as any,
-		};
+	// Convert response to string if needed
+	const text = typeof responseText === 'string' ? responseText : String(responseText);
 
-		const sseData: any[] = [];
-		let buffer = '';
-		let timeoutId: any;
-		let isResolved = false;
+	// Split by double newlines to get individual events
+	const events = text.split('\n\n');
 
-		const req = httpModule.request(requestOptions, (res: any) => {
-			// Set timeout
-			timeoutId = (setTimeout as any)(() => {
-				if (!isResolved) {
-					isResolved = true;
-					req.destroy();
-					// Return collected data on timeout
-					resolve(sseData.length > 0 ? sseData : [{ error: 'SSE timeout - no data received' }]);
+	for (const event of events) {
+		if (!event.trim()) continue;
+
+		const lines = event.split('\n');
+		for (const line of lines) {
+			if (line.startsWith('data: ')) {
+				const dataContent = line.substring(6).trim();
+
+				// Check for end marker
+				if (dataContent === '[DONE]') {
+					return sseData;
 				}
-			}, timeout);
 
-			res.on('data', (chunk: any) => {
-				buffer += chunk.toString();
+				// Parse JSON data
+				try {
+					const jsonData = JSON.parse(dataContent);
+					sseData.push(jsonData);
 
-				// Process complete SSE events (separated by double newlines)
-				const events = buffer.split('\n\n');
-				// Retain the last potentially incomplete event
-				buffer = events.pop() || '';
-
-				for (const event of events) {
-					if (!event.trim()) continue;
-
-					const lines = event.split('\n');
-					for (const line of lines) {
-						if (line.startsWith('data: ')) {
-							const dataContent = line.substring(6).trim();
-
-							// Check for end marker
-							if (dataContent === '[DONE]') {
-								(clearTimeout as any)(timeoutId);
-								if (!isResolved) {
-									isResolved = true;
-									req.destroy();
-									resolve(sseData);
-								}
-								return;
-							}
-
-							// Parse JSON data
-							try {
-								const jsonData = JSON.parse(dataContent);
-								sseData.push(jsonData);
-
-								// If JSON-RPC response is received (contains result or error), consider request complete
-								if (jsonData.result !== undefined || jsonData.error !== undefined) {
-									(clearTimeout as any)(timeoutId);
-									if (!isResolved) {
-										isResolved = true;
-										req.destroy();
-										resolve(sseData);
-									}
-									return;
-								}
-							} catch (e) {
-								// Ignore invalid JSON
-							}
-						}
+					// If JSON-RPC response is received (contains result or error), consider complete
+					if (jsonData.result !== undefined || jsonData.error !== undefined) {
+						return sseData;
 					}
+				} catch (e) {
+					// Ignore invalid JSON
 				}
-			});
-
-			res.on('end', () => {
-				(clearTimeout as any)(timeoutId);
-				if (!isResolved) {
-					isResolved = true;
-					// Process remaining data in buffer
-					if (buffer.trim()) {
-						const lines = buffer.split('\n');
-						for (const line of lines) {
-							if (line.startsWith('data: ')) {
-								const dataContent = line.substring(6).trim();
-								try {
-									const jsonData = JSON.parse(dataContent);
-									sseData.push(jsonData);
-								} catch (e) {
-									// Ignore invalid JSON
-								}
-							}
-						}
-					}
-					resolve(sseData);
-				}
-			});
-
-			res.on('error', (error: Error) => {
-				(clearTimeout as any)(timeoutId);
-				if (!isResolved) {
-					isResolved = true;
-					reject(new Error(`SSE response error: ${error.message}`));
-				}
-			});
-		});
-
-		req.on('error', (error: Error) => {
-			(clearTimeout as any)(timeoutId);
-			if (!isResolved) {
-				isResolved = true;
-				reject(new Error(`SSE request error: ${error.message}`));
 			}
-		});
+		}
+	}
 
-		req.end();
-	});
+	// Return collected data, or error message if no data was parsed
+	return sseData.length > 0 ? sseData : [{ error: 'No valid SSE data received' }];
 }
