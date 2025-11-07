@@ -9,11 +9,11 @@
 	"homepage": "https://superiorapis.cteam.com.tw/en-us",
 	"author": {
 		"name": "SuperiorAPIs",
-		"email": "support@superiorapis.com"
+		"email": "gareth@ctean.com.tw"
 	},
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/CTeaminfo/n8n-nodes-superiorapis"
+		"url": "git+https://github.com/CTeaminfo/n8n-nodes-superiorapis.git"
 	},
 	"engines": {
 		"node": ">=20.15"
