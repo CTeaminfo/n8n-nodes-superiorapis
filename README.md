@@ -55,27 +55,6 @@ To install manually, navigate to your n8n installation directory and run:
 npm install n8n-nodes-superiorapis
 ```
 
-## Credentials
-
-This package includes three credential types:
-
-### SuperiorAPIs API
-Used by the main SuperiorAPIs node for API marketplace access.
-- **Additional Headers** (optional): Custom headers in JSON format
-
-### SuperiorAPIs (SSE) API
-Used by the MCP node for Server-Sent Events connections.
-- **SSE URL**: Endpoint URL for SSE connection
-- **SSE Connection Timeout**: Connection timeout in milliseconds (default: 60000)
-- **Messages Post Endpoint** (optional): Custom message posting endpoint
-- **Additional Headers** (optional): Custom headers in NAME=VALUE format
-
-### SuperiorAPIs (HTTP Streamable) API
-Used by the MCP node for HTTP-based MCP connections.
-- **HTTP Stream URL**: Endpoint URL for HTTP streaming
-- **HTTP Connection Timeout**: Connection timeout in milliseconds (default: 60000)
-- **Messages Post Endpoint** (optional): Custom message posting endpoint
-- **Additional Headers** (optional): Custom headers in NAME=VALUE format
 
 ## Usage
 
@@ -140,13 +119,14 @@ To use the SuperiorAPIs node, you need a token from the SuperiorAPIs platform:
 
 1. Visit [SuperiorAPIs](https://superiorapis.cteam.com.tw/)
 2. Sign up or log in to your account
-3. Navigate to your API keys section
-4. Generate a new token
-5. Copy and use it in the node configuration
+3. Select the API you want to use
+4. Click the "Try me" button
+5. Expand the right panel
+6. Click "sample" to retrieve your token from the sample data
 
 ## Documentation
 
-- **SuperiorAPIs Platform**: [https://superiorapis.cteam.com.tw/](https://superiorapis.cteam.com.tw/)
+- **SuperiorAPIs Platform**: [https://superiorapis.cteam.com.tw/en-us](https://superiorapis.cteam.com.tw/en-us)
 - **Tutorials**: [https://superiorapis.cteam.com.tw/en-us/tutorials](https://superiorapis.cteam.com.tw/en-us/tutorials)
 - **n8n Documentation**: [https://docs.n8n.io/](https://docs.n8n.io/)
 - **Model Context Protocol**: [https://modelcontextprotocol.io/](https://modelcontextprotocol.io/)
@@ -186,8 +166,7 @@ npm run lintfix
 
 For support, questions, or feature requests:
 
-- **Email**: support@superiorapis.com
-- **SuperiorAPIs Platform**: [Contact Us](https://superiorapis.cteam.com.tw/)
+- **Email**: info@cteam.com.tw
 
 ## Contributing
 
@@ -196,17 +175,3 @@ Contributions are welcome! Please read the [Code of Conduct](CODE_OF_CONDUCT.md)
 ## License
 
 [MIT](LICENSE.md)
-
-## Disclaimer
-
-This is a community node and is not officially maintained by n8n. SuperiorAPIs is a trademark of its respective owner.
-
-## Version History
-
-### 0.1.0 (Current)
-- Initial release
-- SuperiorAPIs node with dynamic API selection
-- SuperiorAPIs (MCP) node with SSE and HTTP transport support
-- Scenario template system
-- Resource Mapper for parameter configuration
-- Support for custom headers and query parameters
