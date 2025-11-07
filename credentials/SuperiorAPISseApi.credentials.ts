@@ -1,4 +1,6 @@
 import {
+	IAuthenticateGeneric,
+	ICredentialTestRequest,
 	ICredentialType,
 	INodeProperties,
 } from 'n8n-workflow';
@@ -41,4 +43,23 @@ export class SuperiorAPISseApi implements ICredentialType {
 			description: 'Additional headers to send in the request in NAME=VALUE format, one per line (e.g., token=YOUR_TOKEN)',
 		},
 	];
+
+	authenticate: IAuthenticateGeneric = {
+		type: 'generic',
+		properties: {},
+	};
+
+	test: ICredentialTestRequest = {
+		request: {
+			baseURL: 'https://apis.cteam.com.tw/n8n-node-test',
+			url: '/credential-verify',
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: {
+				test: 'ping',
+			},
+		},
+	};
 }
