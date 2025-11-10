@@ -1,7 +1,7 @@
 {
   "name": "n8n-nodes-superiorapis",
   "version": "0.1.6",
-  "description": "n8n node for SuperiorAPIs - API Store with MCP support",
+  "description": "n8n node for SuperiorAPIs - API Store integration",
   "keywords": [
     "n8n-community-node-package"
   ],
@@ -33,13 +33,10 @@
   "n8n": {
     "n8nNodesApiVersion": 1,
     "credentials": [
-      "dist/credentials/SuperiorAPIsApi.credentials.js",
-      "dist/credentials/SuperiorAPISseApi.credentials.js",
-      "dist/credentials/SuperiorAPIHttpApi.credentials.js"
+      "dist/credentials/SuperiorAPIsApi.credentials.js"
     ],
     "nodes": [
-      "dist/nodes/SuperiorApis/SuperiorApis.node.js",
-      "dist/nodes/SuperiorApisMcp/SuperiorApisMcp.node.js"
+      "dist/nodes/SuperiorApis/SuperiorApis.node.js"
     ]
   },
   "devDependencies": {

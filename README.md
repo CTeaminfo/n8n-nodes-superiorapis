@@ -9,9 +9,6 @@ This is an n8n community node that provides integration with [SuperiorAPIs](http
 
 ## Features
 
-This package provides two powerful nodes for n8n:
-
-### 1. SuperiorAPIs Node
 - **API Selection**: Browse and select from available APIs in the SuperiorAPIs marketplace
 - **Dynamic Parameters**: Automatically loads API parameters based on OpenAPI specifications
 - **Scenario Templates**: Use predefined request templates for common use cases
@@ -21,18 +18,6 @@ This package provides two powerful nodes for n8n:
   - Key-value pairs for simple requests
 - **Custom Headers & Query Parameters**: Full control over request configuration
 - **Multiple HTTP Methods**: Support for GET, POST, PUT, PATCH, DELETE operations
-
-### 2. SuperiorAPIs (MCP) Node
-- **Model Context Protocol (MCP) Support**: Connect to MCP-enabled servers
-- **Dual Transport Modes**:
-  - Server-Sent Events (SSE) for real-time streaming
-  - HTTP POST for traditional JSON-RPC communication
-- **Complete MCP Operations**:
-  - Initialize connections
-  - List and call tools
-  - List and get prompts
-  - List and read resources
-- **Flexible Configuration**: Customizable timeouts and headers
 
 ## Installation
 
@@ -58,8 +43,6 @@ npm install n8n-nodes-superiorapis
 
 ## Usage
 
-### Using the SuperiorAPIs Node
-
 1. **Add the Node**: Drag the "SuperiorAPIs" node to your workflow canvas
 2. **Enter Token**: Provide your SuperiorAPIs platform token
 3. **Select API**: Choose from the available APIs (includes direct links to specification documents)
@@ -73,25 +56,9 @@ npm install n8n-nodes-superiorapis
    - Add custom query parameters or headers as needed
 7. **Execute**: Run your workflow to call the API
 
-### Using the SuperiorAPIs (MCP) Node
+## Example
 
-1. **Add the Node**: Drag the "SuperiorAPIs (MCP)" node to your workflow
-2. **Select Connection Type**: Choose between SSE or HTTP transport
-3. **Configure Credentials**: Set up the appropriate credential (SSE or HTTP)
-4. **Select Operation**:
-   - `Initialize`: Establish MCP connection
-   - `List Tools`: Get available tools
-   - `Call Tool`: Execute a specific tool
-   - `List Prompts`: Get available prompts
-   - `Get Prompt`: Retrieve a specific prompt
-   - `List Resources`: Get available resources
-   - `Read Resource`: Access a specific resource
-5. **Provide Parameters**: Enter required parameters based on the operation
-6. **Execute**: Run the workflow
-
-## Examples
-
-### Example 1: Calling a REST API with Scenario Template
+### Calling a REST API with Scenario Template
 ```
 1. Add SuperiorAPIs node
 2. Enter your token
@@ -99,17 +66,6 @@ npm install n8n-nodes-superiorapis
 4. Select "GET" method
 5. Choose "Get Current Weather" scenario
 6. Modify the JSON parameters if needed (e.g., city name)
-7. Execute
-```
-
-### Example 2: Calling an MCP Tool
-```
-1. Add SuperiorAPIs (MCP) node
-2. Set connection type to "SSE"
-3. Configure SSE credentials
-4. Select "Call Tool" operation
-5. Enter tool name: "summarize_text"
-6. Add parameters: {"text": "Your text here"}
 7. Execute
 ```
 
@@ -129,7 +85,6 @@ To use the SuperiorAPIs node, you need a token from the SuperiorAPIs platform:
 - **SuperiorAPIs Platform**: [https://superiorapis.cteam.com.tw/en-us](https://superiorapis.cteam.com.tw/en-us)
 - **Tutorials**: [https://superiorapis.cteam.com.tw/en-us/tutorials](https://superiorapis.cteam.com.tw/en-us/tutorials)
 - **n8n Documentation**: [https://docs.n8n.io/](https://docs.n8n.io/)
-- **Model Context Protocol**: [https://modelcontextprotocol.io/](https://modelcontextprotocol.io/)
 
 ## Compatibility
 
