@@ -31,7 +31,7 @@ export class SuperiorApis implements INodeType {
 		const cachedTime = workflowStaticData[cacheTimeKey] as number;
 
 		// Check if cache is valid
-		if (workflowStaticData[cacheKey] && cachedTime && (now - cachedTime < CACHE_DURATION)) {
+		if (workflowStaticData[cacheKey] && cachedTime && now - cachedTime < CACHE_DURATION) {
 			return workflowStaticData[cacheKey];
 		}
 
@@ -46,7 +46,6 @@ export class SuperiorApis implements INodeType {
 		// Update cache
 		workflowStaticData[cacheKey] = response;
 		workflowStaticData[cacheTimeKey] = now;
-
 		return response;
 	}
 
@@ -68,13 +67,14 @@ export class SuperiorApis implements INodeType {
 		version: 1,
 
 		// Subtitle (dynamically displays currently selected API and Method)
-		subtitle: '={{$parameter["method"] ? $parameter["method"] + " - " + $parameter["apiSelection"] : $parameter["apiSelection"] || "Select an API"}}',
+		subtitle:
+			'={{$parameter["method"] ? $parameter["method"] + " - " + $parameter["apiSelection"] : $parameter["apiSelection"] || "Select an API"}}',
 
 		// Node description text
 		description: 'Select and call APIs from SuperiorAPIs platform',
 
 		// docs URL
-		documentationUrl:'https://superiorapis.cteam.com.tw/en-us/tutorials',
+		documentationUrl: 'https://superiorapis.cteam.com.tw/en-us/tutorials',
 
 		// Default values configuration
 		defaults: {
@@ -134,8 +134,7 @@ export class SuperiorApis implements INodeType {
 				name: 'apiSelection',
 				type: 'options',
 				noDataExpression: true,
-				displayOptions: {
-				},
+				displayOptions: {},
 				typeOptions: {
 					loadOptionsMethod: 'getApiList',
 					loadOptionsDependsOn: ['token'],
@@ -151,8 +150,7 @@ export class SuperiorApis implements INodeType {
 				name: 'method',
 				type: 'options',
 				noDataExpression: true,
-				displayOptions: {
-				},
+				displayOptions: {},
 				typeOptions: {
 					loadOptionsMethod: 'getMethods',
 					loadOptionsDependsOn: ['apiSelection', 'token'],
@@ -186,8 +184,7 @@ export class SuperiorApis implements INodeType {
 				description:
 					'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 				noDataExpression: true,
-				displayOptions: {
-				},
+				displayOptions: {},
 				typeOptions: {
 					loadOptionsMethod: 'getScenarioList',
 					loadOptionsDependsOn: ['apiSelection', 'method', 'token'],
@@ -206,7 +203,6 @@ export class SuperiorApis implements INodeType {
 					rows: 10,
 				},
 				displayOptions: {
-
 					hide: {
 						scenario: ['', 'no_use_scenario', 'error'],
 					},
@@ -217,7 +213,8 @@ export class SuperiorApis implements INodeType {
 
 			// ==================== Body JSON Switch Notice ====================
 			{
-				displayName: '⚠️ Due to n8n parameter system limitations, when you switch between scenarios, the Body JSON field may display outdated content. To refresh the display:<br/><br/>Step 1: In the scenario list, select "Use Default Request Body".<br/>Step 2: Switch to the scenario you want to use.<br/><br/>Note: No matter what is displayed, the correct scenario JSON will always be used during execution.',
+				displayName:
+					'⚠️ Due to n8n parameter system limitations, when you switch between scenarios, the Body JSON field may display outdated content. To refresh the display:<br/><br/>Step 1: In the scenario list, select "Use Default Request Body".<br/>Step 2: Switch to the scenario you want to use.<br/><br/>Note: No matter what is displayed, the correct scenario JSON will always be used during execution.',
 				name: 'bodyJsonNotice',
 				type: 'notice',
 				default:
@@ -263,7 +260,8 @@ export class SuperiorApis implements INodeType {
 						scenario: ['no_use_scenario'],
 					},
 				},
-				description: '&lt;strong&gt;📝 API Parameters:&lt;/strong&gt;• &lt;strong&gt;[Q]&lt;/strong&gt; = Query parameter (sent in URL)• &lt;strong&gt;[H]&lt;/strong&gt; = Header parameter (sent in request headers)• &lt;strong&gt;*&lt;/strong&gt; = Required parameter',
+				description:
+					'&lt;strong&gt;📝 API Parameters:&lt;/strong&gt;• &lt;strong&gt;[Q]&lt;/strong&gt; = Query parameter (sent in URL)• &lt;strong&gt;[H]&lt;/strong&gt; = Header parameter (sent in request headers)• &lt;strong&gt;*&lt;/strong&gt; = Required parameter',
 			},
 
 			// ==================== Request Body Resource Mapper (POST/PUT/PATCH - displayed when not using scenario) ====================
@@ -301,7 +299,8 @@ export class SuperiorApis implements INodeType {
 						method: ['POST', 'PUT', 'PATCH'],
 					},
 				},
-				description: '&lt;strong&gt;📝 Request Body Fields:&lt;/strong&gt;• All fields will be sent in the request body• &lt;strong&gt;*&lt;/strong&gt; = Required field',
+				description:
+					'&lt;strong&gt;📝 Request Body Fields:&lt;/strong&gt;• All fields will be sent in the request body• &lt;strong&gt;*&lt;/strong&gt; = Required field',
 			},
 
 			// ==================== Query Parameters Section ====================
@@ -509,14 +508,11 @@ export class SuperiorApis implements INodeType {
 					return response.plugins.map((item: any) => {
 						const plugin = item.plugin;
 
-						// Extract specification document URL from description_for_human
+						// Extract specification document URL from description_for_human by finding doc=spec link
 						let specUrl = '';
 						let interfaceId = '';
-
 						if (plugin.description_for_human) {
-							const specMatch = plugin.description_for_human.match(
-								/Specification Document:(https?:\/\/[^\s\n]+)/,
-							);
+							const specMatch = plugin.description_for_human.match(/(https?:\/\/[^\s"'<>]*doc=spec[^\s"'<>]*)/i);
 							if (specMatch) {
 								specUrl = specMatch[1];
 								// Extract interface_id from URL (e.g., 3b52426bfe33)
@@ -654,7 +650,6 @@ export class SuperiorApis implements INodeType {
 						},
 						json: true,
 					});
-
 
 					if (response.status === 1 && response.data?.list && response.data.list.length > 0) {
 						// Batch load request_content for all scenarios
@@ -796,18 +791,22 @@ export class SuperiorApis implements INodeType {
 				// Helper function
 				const mapSchemaTypeToFieldType = (schemaType: string): ResourceMapperField['type'] => {
 					const typeMap: Record<string, ResourceMapperField['type']> = {
-						'string': 'string',
-						'number': 'number',
-						'integer': 'number',
-						'boolean': 'boolean',
-						'array': 'array',
-						'object': 'object',
+						string: 'string',
+						number: 'number',
+						integer: 'number',
+						boolean: 'boolean',
+						array: 'array',
+						object: 'object',
 					};
 					return typeMap[schemaType] || 'string';
 				};
 
 				// Only generate body fields when using no_use_scenario and for POST/PUT/PATCH
-				if (scenario === 'no_use_scenario' && ['POST', 'PUT', 'PATCH'].includes(method.toUpperCase()) && apiSelection) {
+				if (
+					scenario === 'no_use_scenario' &&
+					['POST', 'PUT', 'PATCH'].includes(method.toUpperCase()) &&
+					apiSelection
+				) {
 					try {
 						const pluginData = JSON.parse(Buffer.from(apiSelection, 'base64').toString());
 						const paths = pluginData.interface.paths;
@@ -838,7 +837,7 @@ export class SuperiorApis implements INodeType {
 									display: true,
 									type: mapSchemaTypeToFieldType(prop.type || 'string'),
 									canBeUsedToMatch: true,
-									});
+								});
 							});
 						}
 
